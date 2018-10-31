@@ -11,6 +11,10 @@
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 
+# Build results
+bin/
+bin-int/
+
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
