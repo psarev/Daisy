@@ -8,6 +8,9 @@
 # User-specific files
 *.userprefs
 
+# Do not ignore resources
+!**/resources/*
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 

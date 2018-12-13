@@ -1,4 +1,4 @@
-#include "../include/vector4.h"
+#include "vector4.h"
 
 using namespace daisy;
 

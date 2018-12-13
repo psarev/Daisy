@@ -1,4 +1,4 @@
-#include "../include/matrix4x4.h"
+#include "matrix4x4.h"
 
 using namespace daisy;
 
@@ -9,8 +9,19 @@ matrix4x4 const matrix4x4::IDENTITY = matrix4x4{
 	0.0f, 0.0f, 0.0f, 1.0f };
 
 matrix4x4::matrix4x4()
-	: values{ 0.0f }
+	: values{ { 0.0f } }
 {
+}
+
+matrix4x4::matrix4x4(float const m[4][4])
+{
+	for (size_t i{ 0 }; i < 4; i++)
+	{
+		for (size_t j{ 0 }; j < 4; j++)
+		{
+			values[i][j] = m[i][j];
+		}
+	}
 }
 
 matrix4x4::matrix4x4(
@@ -42,26 +53,22 @@ matrix4x4::matrix4x4(
 
 matrix4x4 matrix4x4::operator*(matrix4x4 const &m) const
 {
-	return matrix4x4{
-		values[0][0] * m.values[0][0] + values[0][1] * m.values[1][0] + values[0][2] * m.values[2][0] + values[0][3] * m.values[3][0],
-		values[0][0] * m.values[0][1] + values[0][1] * m.values[1][1] + values[0][2] * m.values[2][1] + values[0][3] * m.values[3][1],
-		values[0][0] * m.values[0][2] + values[0][1] * m.values[1][2] + values[0][2] * m.values[2][2] + values[0][3] * m.values[3][2],
-		values[0][0] * m.values[0][3] + values[0][1] * m.values[1][3] + values[0][2] * m.values[2][3] + values[0][3] * m.values[3][3],
+	matrix4x4 result;
 
-		values[1][0] * m.values[0][0] + values[1][1] * m.values[1][0] + values[1][2] * m.values[2][0] + values[1][3] * m.values[3][0],
-		values[1][0] * m.values[0][1] + values[1][1] * m.values[1][1] + values[1][2] * m.values[2][1] + values[1][3] * m.values[3][1],
-		values[1][0] * m.values[0][2] + values[1][1] * m.values[1][2] + values[1][2] * m.values[2][2] + values[1][3] * m.values[3][2],
-		values[1][0] * m.values[0][3] + values[1][1] * m.values[1][3] + values[1][2] * m.values[2][3] + values[1][3] * m.values[3][3],
+	for (size_t i{ 0 }; i < 4; i++)
+	{
+		for (size_t j{ 0 }; j < 4; j++)
+		{
+			result.values[i][j] = 0.0f;
 
-		values[2][0] * m.values[0][0] + values[2][1] * m.values[1][0] + values[2][2] * m.values[2][0] + values[2][3] * m.values[3][0],
-		values[2][0] * m.values[0][1] + values[2][1] * m.values[1][1] + values[2][2] * m.values[2][1] + values[2][3] * m.values[3][1],
-		values[2][0] * m.values[0][2] + values[2][1] * m.values[1][2] + values[2][2] * m.values[2][2] + values[2][3] * m.values[3][2],
-		values[2][0] * m.values[0][3] + values[2][1] * m.values[1][3] + values[2][2] * m.values[2][3] + values[2][3] * m.values[3][3],
+			for (size_t k{ 0 }; k < 4; k++)
+			{
+				result.values[i][j] += values[i][k] * m.values[k][j];
+			}
+		}
+	}
 
-		values[3][0] * m.values[0][0] + values[3][1] * m.values[1][0] + values[3][2] * m.values[2][0] + values[3][3] * m.values[3][0],
-		values[3][0] * m.values[0][1] + values[3][1] * m.values[1][1] + values[3][2] * m.values[2][1] + values[3][3] * m.values[3][1],
-		values[3][0] * m.values[0][2] + values[3][1] * m.values[1][2] + values[3][2] * m.values[2][2] + values[3][3] * m.values[3][2],
-		values[3][0] * m.values[0][3] + values[3][1] * m.values[1][3] + values[3][2] * m.values[2][3] + values[3][3] * m.values[3][3] };
+	return result;
 }
 
 matrix4x4 matrix4x4::translation(float const x, float const y, float const z)
@@ -118,9 +125,9 @@ matrix4x4 matrix4x4::rotation_around_z_axis(float const radians)
 		0.0f, 0.0f, 0.0f, 1.0f };
 }
 
-matrix4x4 matrix4x4::rotation_around_axis(vector3 const& axis, float const radians)
+matrix4x4 matrix4x4::rotation_around_axis(vector3f const& axis, float const radians)
 {
-	vector3 axis_normalized{ axis.normalized() };
+	vector3f axis_normalized{ axis.normalized() };
 
 	float const cos_value{ std::cos(radians) };
 	float const sin_value{ std::sin(radians) };
@@ -147,11 +154,19 @@ matrix4x4 matrix4x4::rotation_around_axis(vector3 const& axis, float const radia
 		1.0f };
 }
 
-vector4 daisy::operator*(vector4 const& v, matrix4x4 const& m)
+matrix4x4 matrix4x4::clip_space(float const hfov, float const vfov, float const near, float const far)
 {
-	return vector4{
-		v.x * m.values[0][0] + v.y * m.values[1][0] + v.z * m.values[2][0] + v.w * m.values[3][0],
-		v.x * m.values[0][1] + v.y * m.values[1][1] + v.z * m.values[2][1] + v.w * m.values[3][1],
-		v.x * m.values[0][2] + v.y * m.values[1][2] + v.z * m.values[2][2] + v.w * m.values[3][2],
-		v.x * m.values[0][3] + v.y * m.values[1][3] + v.z * m.values[2][3] + v.w * m.values[3][3] };
+	float const projection_plane_z{ 1.0f };
+
+	float const right{ std::tan(hfov / 2.0f) * projection_plane_z };
+	float const left{ -right };
+	float const top{ std::tan(vfov / 2.0f) * projection_plane_z };
+	float const bottom{ -top };
+
+	return matrix4x4{
+		2.0f * projection_plane_z / (right - left), 0.0f, 0.0f, 0.0f,
+		0.0f, 2.0f * projection_plane_z / (top - bottom), 0.0f, 0.0f,
+		(left + right) / (left - right), (bottom + top) / (bottom - top), (far + near) / (far - near), 1.0f,
+		0.0f, 0.0f, -2.0f * near * far / (far - near), 0.0f 
+	};
 }

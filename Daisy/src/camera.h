@@ -8,21 +8,21 @@ namespace daisy {
 	{
 	public:
 		camera(
-			vector3 const& position,
-			vector3 const& forward,
-			vector3 const& fake_up,
+			vector3f const& position,
+			vector3f const& forward,
+			vector3f const& fake_up,
 			float const horizontal_fov,
 			float const aspect_ratio,
 			float const near_plane_z,
 			float const far_plane_z
 		);
 
-		vector3 get_position() const;
-		void set_position(vector3 const& position);
+		vector3f get_position() const;
+		void set_position(vector3f const& position);
 
-		vector3 get_forward() const;
-		vector3 get_right() const;
-		vector3 get_up() const;
+		vector3f get_forward() const;
+		vector3f get_right() const;
+		vector3f get_up() const;
 		float get_horizontal_fov() const;
 		float get_vertical_fov() const;
 		float get_aspect_ratio() const;
@@ -40,17 +40,17 @@ namespace daisy {
 		void pitch(float const radians);
 
 	private:
-		vector3 m_position;
-		vector3 m_forward;
-		vector3 m_right;
-		vector3 m_up;
+		vector3f m_position;
+		vector3f m_forward;
+		vector3f m_right;
+		vector3f m_up;
 		float const m_horizontal_fov;
 		float const m_vertical_fov;
 		float const m_aspect_ratio;
 		float const m_near_plane_z;
 		float const m_far_plane_z;
 
-		void set_coordinate_system(vector3 const& fake_up);
+		void set_coordinate_system(vector3f const& fake_up);
 	};
 }
 
